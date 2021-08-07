@@ -8,7 +8,7 @@ const AvailableMeals = () => {
     const [meals, setMeals] = useState([]);
 
     useEffect( () => {
-      const URI = process.env.DB_MEALS;
+      const URI = process.env.REACT_APP_DB_MEALS;
       const fetchMeals = async () => {
         const response = await fetch(URI);
         const responseData = await response.json();
