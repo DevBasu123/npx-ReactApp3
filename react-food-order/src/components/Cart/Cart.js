@@ -9,6 +9,7 @@ const Cart = props => {
 
     const cartCtx = useContext(CartContext);
     const [isCheckout, setIsCheckout] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
     const hasItems = cartCtx.items.length > 0;
@@ -21,6 +22,17 @@ const Cart = props => {
     };
     const orderHandler = () => {
         setIsCheckout(true);
+    };
+    const submitOrderHandler = (userData) => {
+        setIsSubmitting(true);
+        const URI_ORDERS = process.env.REACT_APP_DB_ORDERS;
+        fetch(URI_ORDERS, {
+            method: 'POST',
+            body: JSON.stringify({
+                user: userData,
+                orderItems: cartCtx.items
+            })
+        });
     };
 
     const cartItems = <ul className={classes['cart-items']}>{
@@ -46,7 +58,7 @@ const Cart = props => {
             <span>Total Amount</span>
             <span>{totalAmount}</span>
         </div>
-        {isCheckout && <Checkout onCancel={props.onClose} />}
+        {isCheckout && <Checkout onConfirm={submitOrderHandler} onCancel={props.onClose} />}
         {!isCheckout && modalActions}
     </Modal>
 };
