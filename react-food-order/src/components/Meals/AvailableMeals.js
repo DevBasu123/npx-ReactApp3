@@ -7,11 +7,15 @@ const AvailableMeals = () => {
 
     const [meals, setMeals] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [httpError, setHttpError] = useState();
 
     useEffect( () => {
       const URI = process.env.REACT_APP_DB_MEALS;
       const fetchMeals = async () => {
         const response = await fetch(URI);
+        if(!response.ok) {
+          throw new Error('Something went wrong!');
+        }
         const responseData = await response.json();
 
         const loadedMeals = [];
@@ -30,12 +34,20 @@ const AvailableMeals = () => {
         setMeals(loadedMeals);
         setIsLoading(false);
       };
-      fetchMeals();
+      fetchMeals().catch( e => {
+        setIsLoading(false);
+        setHttpError(e.message);
+      });
     }, []);
 
     if(isLoading) {
       return <section className={classes.MealsIsLoading}>
         <p>Loading...</p>
+      </section>;
+    }
+    if(httpError) {
+      return <section className={classes.MealsError}>
+        <p>{httpError}</p>
       </section>;
     }
 
